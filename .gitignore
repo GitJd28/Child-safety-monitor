@@ -1,0 +1,17 @@
+# Virtual Environment
+venv/
+
+# Python
+__pycache__/
+*.pyc
+
+# Data & Models
+data/
+models/
+outputs/
+*.pt
+
+# OS / Editor
+.vscode/
+.DS_Store
+Thumbs.db
