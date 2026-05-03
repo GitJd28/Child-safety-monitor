@@ -1,4 +1,4 @@
-# Child Safety Monitor 👶🚨
+# Child Safety Monitor 🚨
 
 A context-aware AI system for monitoring child safety using:
 - YOLOv8 (person detection)
