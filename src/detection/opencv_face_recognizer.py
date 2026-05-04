@@ -38,12 +38,19 @@ class SimpleFaceRecognizer:
         # Reverse map: {'jd': 0, 'friend': 1, ...}
         self.name_to_label = {}
         
-        # Confidence threshold
-        # LBPH: lower = more confident match
-        # < 70  = known person (confident)
-        # 70-85 = uncertain
-        # > 85  = unknown / stranger
-        self.confidence_threshold = 95
+        # ── Confidence threshold ──
+        # LBPH: LOWER score = MORE confident match
+        # 
+        # With 1 person in dataset:
+        #   Your face        → typically scores 30-60
+        #   A stranger face  → typically scores 80-140+
+        #
+        # Set threshold at 70:
+        #   score < 70  → KNOWN (confident match)
+        #   score >= 70 → UNKNOWN (not confident enough)
+        #
+        # If still misidentifying, lower to 60 or even 50
+        self.confidence_threshold = 70
         
         self.is_trained = False
     
@@ -51,6 +58,16 @@ class SimpleFaceRecognizer:
     # TRAINING
     # ─────────────────────────────────────────────
     
+    def _preprocess_face(self, face_gray):
+        """
+        Consistent preprocessing applied to BOTH
+        training images and live recognition frames.
+        Must be identical in both places.
+        """
+        face_resized = cv2.resize(face_gray, (200, 200))
+        face_eq = cv2.equalizeHist(face_resized)
+        return face_eq
+
     def prepare_dataset(self):
         """
         Load all images from dataset_path.
@@ -108,13 +125,11 @@ class SimpleFaceRecognizer:
                 
                 for (x, y, w, h) in detected:
                     face_crop = gray[y:y+h, x:x+w]
-                    
-                    # Resize to standard size for consistency
-                    face_resized = cv2.resize(face_crop, (200, 200))
-                    face_resized = cv2.equalizeHist(face_resized)
 
+                    # ── Use shared preprocessor ──
+                    face_processed = self._preprocess_face(face_crop)
                     
-                    faces.append(face_resized)
+                    faces.append(face_processed)
                     labels.append(current_label)
                     person_faces += 1
             
@@ -167,18 +182,20 @@ class SimpleFaceRecognizer:
             print("❌ No faces found in dataset. Cannot train.")
             return False
         
-        # if len(set(labels)) < 2:
-
-        #     print("❌ Need at least 2 different people in dataset.")
-        #     print("   Add photos for more people.")
-        #     return False
-        
         if len(set(labels)) < 2:
             print("⚠️  Single person mode - anyone else = UNKNOWN")
-            dummy = np.zeros((200, 200), dtype=np.uint8)
-            faces.append(dummy)
+            # Add multiple diverse dummy samples so the model
+            # has a proper "other" class to compare against.
+            # Random noise faces = maximally different from real face
+            rng = np.random.RandomState(42)
+            for _ in range(20):
+                dummy = rng.randint(
+                    0, 256, (200, 200), dtype=np.uint8
+                )
+                faces.append(dummy)
+            
             next_label = max(labels) + 1
-            labels.append(next_label)
+            labels.extend([next_label] * 20)
             self.label_map[next_label] = '__dummy__'
         
         print("\nTraining LBPH model...")
@@ -242,19 +259,30 @@ class SimpleFaceRecognizer:
         
         for (x, y, w, h) in faces_detected:
             face_crop = gray[y:y+h, x:x+w]
-            face_resized = cv2.resize(face_crop, (200, 200))
+
+            # ── Use shared preprocessor (SAME as training) ──
+            face_processed = self._preprocess_face(face_crop)
             
             # Predict
-            label, confidence = self.recognizer.predict(face_resized)
-            
+            label, confidence = self.recognizer.predict(face_processed)
+
+            # ── Reject dummy label matches as UNKNOWN ──
+            predicted_name = self.label_map.get(label, 'UNKNOWN')
+            is_dummy = predicted_name == '__dummy__'
+
             # Classify as known or unknown
-            if confidence < self.confidence_threshold:
-                name = self.label_map.get(label, 'UNKNOWN')
+            if confidence < self.confidence_threshold and not is_dummy:
+                name = predicted_name
                 is_known = True
             else:
                 name = 'UNKNOWN'
                 is_known = False
                 label = -1
+
+            # Print confidence to console so you can tune threshold
+            print(f"  FACE → label={predicted_name} "
+                  f"confidence={confidence:.1f} "
+                  f"→ {'KNOWN' if is_known else 'UNKNOWN'}")
             
             results.append({
                 'name': name,
@@ -335,7 +363,7 @@ class SimpleFaceRecognizer:
         print("\nFace Recognition Demo")
         print(f"Known persons: {list(self.label_map.values())}")
         print(f"Threshold: {self.confidence_threshold} "
-              f"(lower confidence = better match)")
+              f"(lower confidence score = better match)")
         print("Press 'q' to quit\n")
         
         frame_count = 0
@@ -347,8 +375,6 @@ class SimpleFaceRecognizer:
             
             frame_count += 1
             
-            # Run recognition every frame
-            # (in pipeline we'll throttle this)
             results = self.recognize_frame(frame)
             
             # Draw
@@ -365,7 +391,8 @@ class SimpleFaceRecognizer:
                        0.7, (255, 255, 255), 2)
             
             cv2.putText(annotated,
-                       f"Persons in DB: {list(self.label_map.values())}",
+                       f"Threshold: {self.confidence_threshold} "
+                       f"(tune if needed)",
                        (10, 60),
                        cv2.FONT_HERSHEY_SIMPLEX,
                        0.5, (200, 200, 200), 1)
@@ -400,7 +427,6 @@ if __name__ == "__main__":
     if success:
         fr.run_demo()
     else:
-
         print("\nFix dataset issues above, then run again.")
 
         
