@@ -1,20 +1,73 @@
-# Child Safety Monitor 🚨
+# 🛡️ Child Safety Monitoring System
 
-A context-aware AI system for monitoring child safety using:
-- YOLOv8 (person detection)
-- Pose estimation
-- Audio analysis
-- Context reasoning
+An AI-powered real-time surveillance and monitoring system designed to enhance child safety using computer vision and deep learning techniques.
 
-## Features (WIP)
-- Real-time person detection
-- Child vs adult classification
-- Pose-based danger detection (coming soon)
+The system analyzes live CCTV/video feeds to automatically detect potentially unsafe situations through:
 
-## Tech Stack
+- Human Detection
+- Pose Analysis
+- Face Recognition
+- Real-Time Monitoring
+
+This project is aimed at improving safety monitoring in:
+
+- Homes
+- Schools
+- Hospitals
+- Childcare environments
+
+---
+
+# 🚀 Features
+
+- ✅ Real-time person detection using YOLOv8
+- ✅ Human pose estimation and posture analysis
+- ✅ Face enrollment and recognition system
+- ✅ Live webcam/video stream processing
+- ✅ Personalized face database generation
+- ✅ Detection pipeline for identifying known individuals
+- ✅ Modular architecture for future AI integrations
+
+---
+
+# 🧠 Tech Stack
+
+## AI / Computer Vision
+
 - Python
 - OpenCV
-- PyTorch
 - YOLOv8
+- OpenCV Face Recognizer
+- NumPy
 
-## Project Structure
+## Development Tools
+
+- Git & GitHub
+- Virtual Environment (venv)
+
+---
+
+# 📁 Project Structure
+
+```bash
+child-safety-monitor/
+│
+├── src/
+│   ├── detection/
+│   │   ├── opencv_face_recognizer.py
+│   │   ├── pose_analyzer.py
+│   │   ├── person_classifier.py
+│   │   ├── test_pose.py
+│   │   └── test_yolo.py
+│   │
+│   └── pipeline.py
+│
+├── scripts/
+│   ├── prepare_face_database.py
+│   ├── enroll_your_face.py
+│   └── download_datasets.py
+│
+├── data/
+├── outputs/
+├── checkpoints/
+└── models/
