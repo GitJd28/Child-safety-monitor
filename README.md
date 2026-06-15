@@ -1,73 +1,58 @@
-# 🛡️ Child Safety Monitoring System
+# 🛡️ FusionSight – AI Child Safety Monitoring System
 
-An AI-powered real-time surveillance and monitoring system designed to enhance child safety using computer vision and deep learning techniques.
+FusionSight is a **real-time AI-powered child safety monitoring system** that analyzes live video feeds to detect potentially unsafe situations using computer vision and deep learning.
 
-The system analyzes live CCTV/video feeds to automatically detect potentially unsafe situations through:
-
-- Human Detection
-- Pose Analysis
-- Face Recognition
-- Real-Time Monitoring
-
-This project is aimed at improving safety monitoring in:
-
-- Homes
-- Schools
-- Hospitals
-- Childcare environments
+Unlike traditional baby monitors or CCTV systems, FusionSight understands context — not just detection.
 
 ---
 
-# 🚀 Features
+## 🚀 What It Does
 
-- ✅ Real-time person detection using YOLOv8
-- ✅ Human pose estimation and posture analysis
-- ✅ Face enrollment and recognition system
-- ✅ Live webcam/video stream processing
-- ✅ Personalized face database generation
-- ✅ Detection pipeline for identifying known individuals
-- ✅ Modular architecture for future AI integrations
+✔ Detects **who** is in the room (child vs adult)  
+✔ Identifies **what** they are doing (falling, climbing, unsafe posture)  
+✔ Recognizes **known vs unknown faces**  
+✔ Combines all signals to decide **whether an alert is actually needed**  
 
----
-
-# 🧠 Tech Stack
-
-## AI / Computer Vision
-
-- Python
-- OpenCV
-- YOLOv8
-- OpenCV Face Recognizer
-- NumPy
-
-## Development Tools
-
-- Git & GitHub
-- Virtual Environment (venv)
+All processing is done **on-device**, ensuring privacy and zero additional hardware cost.
 
 ---
 
-# 📁 Project Structure
+## 🧠 How It Works (4-Layer Pipeline)
 
-```bash
-child-safety-monitor/
-│
-├── src/
-│   ├── detection/
-│   │   ├── opencv_face_recognizer.py
-│   │   ├── pose_analyzer.py
-│   │   ├── person_classifier.py
-│   │   ├── test_pose.py
-│   │   └── test_yolo.py
-│   │
-│   └── pipeline.py
-│
-├── scripts/
-│   ├── prepare_face_database.py
-│   ├── enroll_your_face.py
-│   └── download_datasets.py
-│
-├── data/
-├── outputs/
-├── checkpoints/
-└── models/
+1️⃣ **Person Detection** – YOLOv8  
+2️⃣ **Pose Estimation** – YOLOv8-Pose (17 keypoints)  
+3️⃣ **Face Recognition** – Haar Cascade + LBPH  
+4️⃣ **Context Engine** – Rule-based decision system for smart alerts  
+
+---
+
+## 🛠 Tech Stack
+
+- Python  
+- YOLOv8  
+- OpenCV  
+- NumPy  
+- Haar Cascade & LBPH  
+
+---
+
+## 💡 Key Highlights
+
+- ✅ Real-time monitoring on CPU  
+- ✅ Context-aware alerts (not just motion detection)  
+- ✅ Face enrollment system  
+- ✅ Modular architecture for future AI integrations  
+- ✅ Designed for homes, schools & childcare environments  
+
+---
+
+## 🔮 Future Scope
+
+- Audio analysis (YAMNet)  
+- SMS alerts (Twilio)  
+- Edge deployment (Raspberry Pi)  
+- Mobile application  
+
+---
+
+**Built to move from simple detection → intelligent safety awareness.**
