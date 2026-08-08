@@ -2,7 +2,7 @@
 
 FusionSight is a **real-time AI-powered child safety monitoring system** that analyzes live video feeds to detect potentially unsafe situations using computer vision and deep learning.
 
-Unlike traditional baby monitors or CCTV systems, FusionSight understands context — not just detection.
+Unlike traditional baby monitors or CCTV systems, FusionSight understands context not just detection.
 
 ---
 
